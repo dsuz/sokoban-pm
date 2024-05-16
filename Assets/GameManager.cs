@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public GameObject playerPrefab;
     int[,] map;
+    GameObject[,] field;
     GameObject instance;
 
     /// <summary>
@@ -38,18 +39,21 @@ public class GameManager : MonoBehaviour
     //    return true;
     //}
 
-    //int GetPlayerIndex()
-    //{
-    //    for (int i = 0; i < map.Length; i++)
-    //    {
-    //        if (map[i] == 1)
-    //        {
-    //            return i;
-    //        }
-    //    }
+    Vector2Int GetPlayerIndex()
+    {
+        for (int y = 0; y < field.GetLength(0); y++)
+        {
+            for (int x = 0; x < field.GetLength(1); x++)
+            {
+                if (map[y, x] == 1)
+                {
+                    return new Vector2Int(x, y);
+                }
+            }
+        }
 
-    //    return -1;
-    //}
+        return new Vector2Int(-1, -1);
+    }
 
     void PrintArray()
     {
@@ -61,7 +65,7 @@ public class GameManager : MonoBehaviour
             {
                 debugText += map[y, x].ToString() + ",";
             }
-            
+
             debugText += "\n";
         }
 
@@ -79,7 +83,13 @@ public class GameManager : MonoBehaviour
             { 0, 0, 0, 0, 0, 2, 0, 2, 0 },
             { 0, 0, 0, 0, 0, 2, 0, 2, 0 }
         };
+
         PrintArray();
+
+        field = new GameObject[
+            map.GetLength(0),
+            map.GetLength(1)
+        ];
 
         for (int y = 0; y < map.GetLength(0); y++)
         {
@@ -89,6 +99,7 @@ public class GameManager : MonoBehaviour
                 {
                     instance =
                         Instantiate(playerPrefab, new Vector3(x, -1 * y, 0), Quaternion.identity);
+                    field[y, x] = instance;
                     break;
                 }
             }
