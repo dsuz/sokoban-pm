@@ -34,17 +34,6 @@ public class GameManager : MonoBehaviour
                 return false;
         }   // 行先に箱がある時
 
-        //if (map[moveto] == 2)
-        //{
-        //    int offset = moveto - movefrom; // 箱の行先を決めるための差分
-        //    bool success = movenumber(2, moveto, moveto + offset);
-
-        //    if (!success)
-        //    {
-        //        return false;
-        //    }
-        //}   // 行先に箱がある時
-
         field[movefrom.y, movefrom.x].transform.position =
             new Vector3(moveto.x, -1 * moveto.y, 0);    // シーン上のオブジェクトを動かす
         // field のデータを動かす
