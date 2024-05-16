@@ -16,28 +16,32 @@ public class GameManager : MonoBehaviour
     /// <param name="moveFrom">元の位置</param>
     /// <param name="moveTo">移動先の位置</param>
     /// <returns>移動可能な時 true</returns>
-    //bool MoveNumber(int number, int moveFrom, int moveTo)
-    //{
-    //    if (moveTo < 0 || moveTo >= map.Length)
-    //    {
-    //        return false;
-    //    }
+    bool MoveNumber(Vector2Int movefrom, Vector2Int moveto)
+    {
+        if (moveto.y < 0 || moveto.y >= field.GetLength(0))
+            return false;
 
-    //    if (map[moveTo] == 2)
-    //    {
-    //        int offset = moveTo - moveFrom; // 箱の行先を決めるための差分
-    //        bool success = MoveNumber(2, moveTo, moveTo + offset);
+        if (moveto.x < 0 || moveto.x >= field.GetLength(1))
+            return false;
 
-    //        if (!success)
-    //        {
-    //            return false;
-    //        }
-    //    }   // 行先に箱がある時
+        //if (map[moveto] == 2)
+        //{
+        //    int offset = moveto - movefrom; // 箱の行先を決めるための差分
+        //    bool success = movenumber(2, moveto, moveto + offset);
 
-    //    map[moveTo] = number;
-    //    map[moveFrom] = 0;
-    //    return true;
-    //}
+        //    if (!success)
+        //    {
+        //        return false;
+        //    }
+        //}   // 行先に箱がある時
+
+        field[movefrom.y, movefrom.x].transform.position =
+            new Vector3(moveto.x, -1 * moveto.y, 0);    // シーン上のオブジェクトを動かす
+        // field のデータを動かす
+        field[moveto.y, moveto.x] = field[movefrom.y, movefrom.x];
+        field[movefrom.y, movefrom.x] = null;
+        return true;
+    }
 
     Vector2Int GetPlayerIndex()
     {
@@ -45,14 +49,16 @@ public class GameManager : MonoBehaviour
         {
             for (int x = 0; x < field.GetLength(1); x++)
             {
-                if (map[y, x] == 1)
+                GameObject obj = field[y, x];
+
+                if (obj != null && obj.tag == "Player")
                 {
                     return new Vector2Int(x, y);
-                }
+                }   // プレイヤーを見つけた
             }
         }
 
-        return new Vector2Int(-1, -1);
+        return new Vector2Int(-1, -1);  // 見つからなかった
     }
 
     void PrintArray()
@@ -79,7 +85,7 @@ public class GameManager : MonoBehaviour
             { 1, 0, 0, 0, 0, 2, 0, 2, 0 },
             { 0, 0, 0, 0, 0, 2, 0, 2, 0 },
             { 0, 0, 0, 0, 0, 2, 0, 2, 0 },
-            { 0, 0, 0, 0, 1, 2, 0, 2, 0 },
+            { 0, 0, 0, 0, 0, 2, 0, 2, 0 },
             { 0, 0, 0, 0, 0, 2, 0, 2, 0 },
             { 0, 0, 0, 0, 0, 2, 0, 2, 0 }
         };
@@ -108,12 +114,12 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.RightArrow))
-        //{
-        //    int playerIndex = GetPlayerIndex();
-        //    MoveNumber(1, playerIndex, playerIndex + 1);
-        //    PrintArray();
-        //}
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            var playerPostion = GetPlayerIndex();
+            MoveNumber(playerPostion, playerPostion + Vector2Int.right);
+            PrintArray();
+        }
 
         //if (Input.GetKeyDown(KeyCode.LeftArrow))
         //{
