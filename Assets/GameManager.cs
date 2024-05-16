@@ -25,6 +25,15 @@ public class GameManager : MonoBehaviour
         if (moveto.x < 0 || moveto.x >= field.GetLength(1))
             return false;
 
+        if (field[moveto.y, moveto.x]?.tag == "Box")
+        {
+            var offset = moveto - movefrom;  // 箱の行先を決めるための差分
+            bool result = MoveNumber(moveto, moveto + offset);
+
+            if (!result)
+                return false;
+        }   // 行先に箱がある時
+
         //if (map[moveto] == 2)
         //{
         //    int offset = moveto - movefrom; // 箱の行先を決めるための差分
