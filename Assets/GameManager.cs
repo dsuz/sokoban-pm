@@ -121,11 +121,26 @@ public class GameManager : MonoBehaviour
             PrintArray();
         }
 
-        //if (Input.GetKeyDown(KeyCode.LeftArrow))
-        //{
-        //    int playerIndex = GetPlayerIndex();
-        //    MoveNumber(1, playerIndex, playerIndex - 1);
-        //    PrintArray();
-        //}
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            var playerPostion = GetPlayerIndex();
+            MoveNumber(playerPostion, playerPostion + Vector2Int.left);
+            PrintArray();
+        }
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            var playerPostion = GetPlayerIndex();
+            MoveNumber(playerPostion, playerPostion - Vector2Int.up);
+            PrintArray();
+        }
+
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            var playerPostion = GetPlayerIndex();
+            MoveNumber(playerPostion, playerPostion - Vector2Int.down);
+            PrintArray();
+
+        }
     }
 }
