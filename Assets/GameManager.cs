@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameObject playerPrefab;
+    public GameObject boxPrefab;
     int[,] map;
     GameObject[,] field;
     GameObject instance;
@@ -107,7 +108,13 @@ public class GameManager : MonoBehaviour
                         Instantiate(playerPrefab, new Vector3(x, -1 * y, 0), Quaternion.identity);
                     field[y, x] = instance;
                     break;
-                }
+                }   // プレイヤーを見つけた
+                else if (map[y, x] == 2)
+                {
+                    instance =
+                        Instantiate(boxPrefab, new Vector3(x, -1 * y, 0), Quaternion.identity);
+                    field[y, x] = instance;
+                }   // 箱を見つけた
             }
         }
     }
