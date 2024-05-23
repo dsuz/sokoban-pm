@@ -4,11 +4,42 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    /// <summary>クリアを表すテキスト</summary>
+    public GameObject clearText;
     public GameObject playerPrefab;
     public GameObject boxPrefab;
+    public GameObject goalPrefab;
+    /// <summary>初期状態が入っている</summary>
     int[,] map;
+    /// <summary>現在のマップの状態が入っている</summary>
     GameObject[,] field;
     GameObject instance;
+    
+    bool IsCleared()
+    {
+        List<Vector2Int> goals = new List<Vector2Int>();
+
+        for (int y = 0; y < map.GetLength(0); y++)
+        {
+            for (int x = 0; x < map.GetLength(1); x++)
+            {
+                if (map[y, x] == 3)
+                {
+                    goals.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+
+        foreach(var g in goals)
+        {
+            var go = field[g.y, g.x];
+
+            if (go == null || go.tag != "Box")
+                return false;
+        }
+
+        return true;
+    }
 
     /// <summary>
     /// 与えられた数字をマップ上で移動させる
@@ -34,8 +65,12 @@ public class GameManager : MonoBehaviour
                 return false;
         }   // 行先に箱がある時
 
-        field[movefrom.y, movefrom.x].transform.position =
-            new Vector3(moveto.x, -1 * moveto.y, 0);    // シーン上のオブジェクトを動かす
+        //field[movefrom.y, movefrom.x].transform.position =
+        //    new Vector3(moveto.x, -1 * moveto.y, 0);    // シーン上のオブジェクトを動かす
+        GameObject playerOrBox = field[movefrom.y, movefrom.x];
+        Move move = playerOrBox.GetComponent<Move>();
+        move.MoveTo(new Vector3(moveto.x, -1 * moveto.y, 0));
+
         // field のデータを動かす
         field[moveto.y, moveto.x] = field[movefrom.y, movefrom.x];
         field[movefrom.y, movefrom.x] = null;
@@ -79,14 +114,16 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        clearText.SetActive(false);
+
         map = new int[,]
         {
-            { 1, 0, 0, 0, 0, 2, 0, 2, 0 },
-            { 0, 0, 0, 0, 0, 2, 0, 2, 0 },
-            { 0, 0, 0, 0, 0, 2, 0, 2, 0 },
-            { 0, 0, 0, 0, 0, 2, 0, 2, 0 },
-            { 0, 0, 0, 0, 0, 2, 0, 2, 0 },
-            { 0, 0, 0, 0, 0, 2, 0, 2, 0 }
+            { 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 2, 3, 2, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 3, 0 },
+            { 0, 0, 0, 3, 0, 2, 0, 2, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
         };
 
         PrintArray();
@@ -105,7 +142,6 @@ public class GameManager : MonoBehaviour
                     instance =
                         Instantiate(playerPrefab, new Vector3(x, -1 * y, 0), Quaternion.identity);
                     field[y, x] = instance;
-                    break;
                 }   // プレイヤーを見つけた
                 else if (map[y, x] == 2)
                 {
@@ -113,6 +149,11 @@ public class GameManager : MonoBehaviour
                         Instantiate(boxPrefab, new Vector3(x, -1 * y, 0), Quaternion.identity);
                     field[y, x] = instance;
                 }   // 箱を見つけた
+                else if (map[y, x] == 3)
+                {
+                    instance =
+                        Instantiate(goalPrefab, new Vector3(x, -1 * y, 0), Quaternion.identity);
+                }   // ゴールを見つけた
             }
         }
     }
@@ -123,29 +164,32 @@ public class GameManager : MonoBehaviour
         {
             var playerPostion = GetPlayerIndex();
             MoveNumber(playerPostion, playerPostion + Vector2Int.right);
-            PrintArray();
+            if (IsCleared())
+                clearText.SetActive(true);
         }
 
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             var playerPostion = GetPlayerIndex();
             MoveNumber(playerPostion, playerPostion + Vector2Int.left);
-            PrintArray();
+            if (IsCleared())
+                clearText.SetActive(true);
         }
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             var playerPostion = GetPlayerIndex();
             MoveNumber(playerPostion, playerPostion - Vector2Int.up);
-            PrintArray();
+            if (IsCleared())
+                clearText.SetActive(true);
         }
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             var playerPostion = GetPlayerIndex();
             MoveNumber(playerPostion, playerPostion - Vector2Int.down);
-            PrintArray();
-
+            if (IsCleared())
+                clearText.SetActive(true);
         }
     }
 }
